@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>POWER ARENA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Inline:opsz,wght@10..72,100..900&family=Caesar+Dressing&family=Luxurious+Roman&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(to bottom,#acaa66, hsl(63, 49%, 85%), #acaa66);
+      background-image: url("https://t4.ftcdn.net/jpg/06/26/93/15/360_F_626931588_lULgEhJVdjKmmtRa2DnEEvBWmHcVawrh.jpg");
+        background-position: center;
+        background-size: 20% 50%;
+      color: #ffffff;
+      text-shadow: #000 1px 1px;
+      font-family: 'Luxurious Roman',serif;
+      padding: 20px;
+      max-width: 700px;
+      margin: auto;
+    }
+    h1, h2 {
+      color:#ff0000 ;
+        text-align: center;
+        font-family:"Luxurious Roman",serif;
+        font-size: 400%;
+      text-shadow: 1px 1px #000;
+    }
+    input, select, button, textarea {
+      margin: 5px 0;
+      padding: 10px;
+      font-size: 16px;
+      width: 100%;
+      border-radius: 5px;
+      border: 1px solid #444;
+      background: #222;
+      color: #ffffff;
+      box-sizing: border-box;
+    }
+    .move {
+      margin-bottom: 10px;
+      background: #2d2d3f;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #555;
+    }
+    .character-list {
+      margin-top: 30px;
+      background: linear-gradient( to bottom, #f7e971 ,  #ebd86b);
+      background-image: url("https://img.freepik.com/free-photo/paper-texture-top-view_23-2151834088.jpg?semt=ais_hybrid&w=740;");
+      
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid #444;
+    }
+    .character-list div {
+      background: #2d2d3d;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      border: 1px solid #555;
+    }
+    button {
+      background: #ffcc00;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #e6b800;
+    }
+    #battleLog {
+        font-family:"luxurious Roman",serif;
+      background: #111;
+      color: #f3e141;
+      padding: 15px;
+      height: 180px;
+      overflow-y: auto;
+      margin-top: 10px;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 14px;
+      white-space: pre-wrap;
+    }
+    label {
+      font-weight: bold;
+      margin-top: 10px;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <h1>🛡️ POWER ARENA 🛡️</h1>
+
+  <label>Name:</label>
+  <input id="charName" type="text" placeholder="Enter character name" />
+
+  <label>Color Palette / Theme:</label>
+  <input id="charColor" type="text" placeholder="E.g. Red, Cyber, Forest..." />
+
+  <label>Hobby:</label>
+  <select id="charHobby">
+    <option value="" disabled selected>Select Hobby</option>
+    <option>Athlete</option>
+    <option>Coding</option>
+    <option>Drawing</option>
+    <option>Dancing</option>
+    <option>Cooking</option>
+    <option>Music</option>
+    <option>Gaming</option>
+    <option>Reading</option>
+    <option>Traveling</option>
+    <option>Photography</option>
+  </select>
+
+  <label>Personality:</label>
+  <select id="charPersonality">
+    <option value="" disabled selected>Select Personality</option>
+    <option>Brave</option>
+    <option>Mysterious</option>
+    <option>Cheerful</option>
+    <option>Serious</option>
+    <option>Cunning</option>
+    <option>Kind</option>
+    <option>Curious</option>
+    <option>Reckless</option>
+    <option>Wise</option>
+    <option>Playful</option>
+    <option>Coward</option>
+  </select>
+
+  <label>Height (cm):</label>
+  <input id="charHeight" type="number" />
+
+  <label>Weight (kg):</label>
+  <input id="charWeight" type="number" />
+
+  <label>Lore:</label>
+  <textarea id="charLore" placeholder="Write character's story..." rows="4"></textarea>
+
+  <h2>🌀 Add 4 Moves</h2>
+  <div id="movesContainer"></div>
+
+  <h2>⚙️ Stats (Max 10 each)</h2>
+  <label>Strength:</label>
+  <input id="statStrength" type="number" min="0" max="10" value="10" />
+  <label>Agility:</label>
+  <input id="statAgility" type="number" min="0" max="10" value="10" />
+  <label>Defense:</label>
+  <input id="statDefense" type="number" min="0" max="10" value="10" />
+  <label>Luck:</label>
+  <input id="statLuck" type="number" min="0" max="10" value="10" />
+
+  <button onclick="saveCharacter()">Save Character</button>
+
+  <div class="character-list">
+    <h2>📜 Saved Characters</h2>
+    <div id="characterList"></div>
+  </div>
+
+  <h2>⚔️ Battle Arena</h2>
+  <label for="fighter1">Select Fighter 1:</label>
+  <select id="fighter1"></select>
+
+  <label for="fighter2">Select Fighter 2:</label>
+  <select id="fighter2"></select>
+
+  <button onclick="startBattle()">Start Battle</button>
+
+  <div id="battleLog"></div>
+
+  <script>
+    const movesContainer = document.getElementById("movesContainer");
+    const characterList = document.getElementById("characterList");
+    const fighter1Select = document.getElementById("fighter1");
+    const fighter2Select = document.getElementById("fighter2");
+    const battleLog = document.getElementById("battleLog");
+
+    function createMoveInputs(index) {
+      return `
+        <div class="move">
+          <label>Move ${index + 1} Name:</label>
+          <input type="text" class="move-name" placeholder="Strike" />
+          <label>Type:</label>
+          <select class="move-type">
+            <option value="attack">Attack</option>
+            <option value="defend">Defend</option>
+          </select>
+          <label>Value (Max 30):</label>
+          <input type="number" class="move-value" placeholder="15" min="0" max="30" />
+        </div>
+      `;
+    }
+
+    for (let i = 0; i < 4; i++) {
+      movesContainer.innerHTML += createMoveInputs(i);
+    }
+
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(value, max));
+    }
+
+    function saveCharacter() {
+      const name = document.getElementById("charName").value.trim();
+      const color = document.getElementById("charColor").value.trim();
+      const hobby = document.getElementById("charHobby").value;
+      const personality = document.getElementById("charPersonality").value;
+      const height = parseInt(document.getElementById("charHeight").value);
+      const weight = parseInt(document.getElementById("charWeight").value);
+      const lore = document.getElementById("charLore").value.trim();
+
+      const moveNames = document.querySelectorAll(".move-name");
+      const moveTypes = document.querySelectorAll(".move-type");
+      const moveValues = document.querySelectorAll(".move-value");
+
+      let strength = clamp(parseInt(document.getElementById("statStrength").value) || 0, 0, 10);
+      let agility = clamp(parseInt(document.getElementById("statAgility").value) || 0, 0, 10);
+      let defense = clamp(parseInt(document.getElementById("statDefense").value) || 0, 0, 10);
+      let luck = clamp(parseInt(document.getElementById("statLuck").value) || 0, 0, 10);
+
+      if (!name || !hobby || !personality || !height || !weight) {
+        alert("Please fill all required fields!");
+        return;
+      }
+
+      const moves = [];
+      for (let i = 0; i < 4; i++) {
+        let moveVal = clamp(parseInt(moveValues[i].value) || 0, 0, 30);
+        moves.push({
+          name: moveNames[i].value.trim() || `Move ${i + 1}`,
+          type: moveTypes[i].value,
+          value: moveVal,
+        });
+      }
+
+      const character = {
+        name, color, hobby, personality, height, weight, lore, moves,
+        stats: { strength, agility, defense, luck },
+      };
+
+      const existing = JSON.parse(localStorage.getItem("rpgCharacters") || "[]");
+      existing.push(character);
+      localStorage.setItem("rpgCharacters", JSON.stringify(existing));
+      alert("Character saved!");
+      clearInputs();
+      listCharacters();
+      populateFighters();
+    }
+
+    function clearInputs() {
+      document.getElementById("charName").value = "";
+      document.getElementById("charColor").value = "";
+      document.getElementById("charHobby").selectedIndex = 0;
+      document.getElementById("charPersonality").selectedIndex = 0;
+      document.getElementById("charHeight").value = "";
+      document.getElementById("charWeight").value = "";
+      document.getElementById("charLore").value = "";
+      document.getElementById("statStrength").value = 10;
+      document.getElementById("statAgility").value = 10;
+      document.getElementById("statDefense").value = 10;
+      document.getElementById("statLuck").value = 10;
+      const moveNames = document.querySelectorAll(".move-name");
+      const moveTypes = document.querySelectorAll(".move-type");
+      const moveValues = document.querySelectorAll(".move-value");
+      for(let i=0; i<4; i++){
+        moveNames[i].value = "";
+        moveTypes[i].selectedIndex = 0;
+        moveValues[i].value = "";
+      }
+    }
+
+    function listCharacters() {
+      const characters = JSON.parse(localStorage.getItem("rpgCharacters") || "[]");
+      characterList.innerHTML = characters.length === 0 ? "<p>No characters saved yet.</p>" : characters
+        .map((c, i) => `
+          <div>
+            <strong>${c.name}</strong><br>
+            Personality: ${c.personality}, Hobby: ${c.hobby}<br>
+            Height: ${c.height}cm, Weight: ${c.weight}kg<br>
+            Theme: ${c.color}<br>
+            Lore: ${c.lore}<br>
+            Moves: ${c.moves.map(m => `${m.name} (${m.type}: ${m.value})`).join(", ")}<br>
+            <b>Stats:</b> Strength: ${c.stats.strength}, Agility: ${c.stats.agility}, Defense: ${c.stats.defense}, Luck: ${c.stats.luck}<br>
+            <button onclick="deleteCharacter(${i})" style="background:red;color:white;border:none;padding:5px;border-radius:5px;margin-top:8px;">❌ Delete</button>
+          </div>
+        `).join("");
+
+      populateFighters();
+    }
+
+    function deleteCharacter(index) {
+      const characters = JSON.parse(localStorage.getItem("rpgCharacters") || "[]");
+      characters.splice(index, 1);
+      localStorage.setItem("rpgCharacters", JSON.stringify(characters));
+      listCharacters();
+    }
+
+    function populateFighters() {
+      const characters = JSON.parse(localStorage.getItem("rpgCharacters") || "[]");
+      fighter1Select.innerHTML = '<option value="" disabled selected>Select Fighter 1</option>';
+      fighter2Select.innerHTML = '<option value="" disabled selected>Select Fighter 2</option>';
+      characters.forEach((c, i) => {
+        const option1 = new Option(c.name, i);
+        const option2 = new Option(c.name, i);
+        fighter1Select.appendChild(option1);
+        fighter2Select.appendChild(option2);
+      });
+    }
+
+    function startBattle() {
+      const characters = JSON.parse(localStorage.getItem("rpgCharacters") || "[]");
+      const fighter1 = JSON.parse(JSON.stringify(characters[fighter1Select.value]));
+      const fighter2 = JSON.parse(JSON.stringify(characters[fighter2Select.value]));
+
+      if (!fighter1 || !fighter2 || fighter1.name === fighter2.name) {
+        alert("Select two different fighters!");
+        return;
+      }
+
+      fighter1.hp = 200;
+      fighter2.hp = 200;
+
+      let attacker = fighter1;
+      let defender = fighter2;
+      let turn = 1;
+      battleLog.textContent = `Battle Start!\n${fighter1.name} vs ${fighter2.name}\n\n`;
+
+      function nextTurn() {
+        if (fighter1.hp <= 0 || fighter2.hp <= 0) {
+          battleLog.textContent += `\n🏆 ${fighter1.hp > 0 ? fighter1.name : fighter2.name} wins the battle! 🏆`;
+          return;
+        }
+
+        battleLog.textContent += `Turn ${turn}: ${attacker.name}'s move.\n`;
+        const move = attacker.moves[Math.floor(Math.random() * attacker.moves.length)];
+
+        if (move.type === "attack") {
+          let luckFactor = Math.floor(Math.random() * attacker.stats.luck);
+          let damage = move.value + attacker.stats.strength + luckFactor;
+
+          if (Math.random() < 0.5 && defender.moves.some(m => m.type === "defend")) {
+            const defenseMove = defender.moves.find(m => m.type === "defend");
+            const defensePower = defenseMove.value + defender.stats.defense + Math.floor(Math.random() * defender.stats.agility);
+            damage -= defensePower;
+            if (damage < 0) damage = 0;
+            battleLog.textContent += `${defender.name} used defense "${defenseMove.name}" reducing damage by ${defensePower}.\n`;
+          }
+
+          defender.hp -= damage;
+          battleLog.textContent += `${attacker.name} used "${move.name}" dealing ${damage} to ${defender.name}. (${defender.name}'s HP: ${defender.hp})\n`;
+        } else {
+          battleLog.textContent += `${attacker.name} used "${move.name}" as a defensive move.\n`;
+        }
+
+        [attacker, defender] = [defender, attacker];
+        turn++;
+        setTimeout(nextTurn, 1500);
+      }
+
+      nextTurn();
+    }
+
+    listCharacters();
+  </script>
+  <footer>
+    <p style="text-align: center; margin-top: 20px; color: #ffffff;">Created with ❤️ by SHIV SINGH</p>
+    <p style="text-align: center; color: #ffffff;">Future Updates will have : Character design, like/dislike feature, upgrade, etc</p>
+</footer>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
