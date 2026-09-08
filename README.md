@@ -1,4 +1,4 @@
-#🛡️ POWER ARENA 
+# 🛡️ POWER ARENA 
 A fun web-based RPG tool to create, customize, and battle your own original characters — no backend needed! All characters and battles are stored locally in your browser.
 
 🚀 Features
